@@ -1,8 +1,26 @@
 # eqlink
 基于Python，简单的注册中心（为eqsmart服务）。
 
-## 版本说明
-* 
+## 使用说明
+### 启动注册中心
+```python
+import socket
+from eqlink.main.server import LinkServer
+
+
+'''本机IP'''
+HOST = socket.gethostname()
+'''配置信息'''
+SERVER_CONF = {
+    'HOST': HOST,
+    'PORT': 7878,
+    'BUF_SIZE': 1024,
+    'BACKLOG': 5
+}
+LinkServer(SERVER_CONF, './server_list').server_init()
+
+```
+
 
 ## 免责声明
 * 本项目所有内容仅供参考和学习交流使用。
