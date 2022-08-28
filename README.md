@@ -6,6 +6,10 @@ https://github.com/enqiangjing/eqsmart
 ```
 
 ## 1. 使用说明
+```shell script
+pip install eqlink
+```
+
 ### 1.1 启动注册中心
 ```python
 import socket
