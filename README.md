@@ -13,7 +13,7 @@ pip install eqlink
 ### 1.1 启动注册中心
 ```python
 import socket
-from eqlink.main.server import LinkServer
+from eqlink.main.registry_server import LinkServer
 
 
 '''本机IP'''

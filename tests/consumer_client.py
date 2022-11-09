@@ -3,7 +3,7 @@ Consumer 连接注册中心
 """
 
 import socket
-from eqlink.main.clent import LinkClient
+from eqlink.main.consumer_client import LinkClient
 
 if __name__ == '__main__':
     ip = socket.gethostbyname(socket.gethostname())

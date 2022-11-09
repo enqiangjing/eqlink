@@ -3,7 +3,7 @@
 """
 
 import socket
-from eqlink.main.register import LinkRegister
+from eqlink.main.provider_register import LinkRegister
 
 if __name__ == '__main__':
     ip = socket.gethostbyname(socket.gethostname())

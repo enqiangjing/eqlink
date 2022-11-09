@@ -8,12 +8,10 @@ from sys import path as sys_path
 class ReadModule:
     def __init__(self, path=None):
         """
-        初始化
-        :param path: 要读取的子模块所在路径
+        对象初始化
+        :param path: 要读取的子模块路径
         """
-        if path is None:
-            path = '..'
-        sys_path.append(path)
+        sys_path.append('..' if path is None else path)
         self.module_list = {}
 
     def read(self, item):
@@ -22,10 +20,6 @@ class ReadModule:
         :param item: 子模块名称
         :return: 子模块
         """
-        if item in self.module_list.keys():
-            '''相同的子模块如果已读取，直接返回'''
-            return self.module_list[item]
-        '''子模块导入'''
-        module_item = import_module(item)
-        self.module_list[item] = module_item
-        return module_item
+        if item not in self.module_list.keys():
+            self.module_list[item] = import_module(item)
+        return self.module_list[item]

@@ -1,5 +1,6 @@
 """
 远程服务：用于Consumer客户端本地读取Provider列表
+1.
 """
 
 
@@ -14,4 +15,5 @@ class RemoteServer:
         self.remote_server = data
 
 
+''' 用于共享的远程服务列表对象 '''
 remote_server = RemoteServer()
