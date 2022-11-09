@@ -5,6 +5,7 @@ import json
 import socket
 from time import sleep as time_sleep
 from eqlink.components.remote_server import remote_server
+from eqlink.components.code_msg import sys_error
 import traceback
 
 '''失效服务列表'''
@@ -23,54 +24,43 @@ class LinkClient:
 
     def client_int(self, data_to_server):
         """
-        客户端 socket 初始化
+        consumer获取注册中心服务列表的线程对象
         :param data_to_server: 发送到注册中心的数据
-        :return: void
+        :return: None
         """
         client = None
-        try:
-            ''' 创建socket套接字 '''
+        try:  # 创建socket套接字
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error as e:
             print("[eqlink] Error creating socket: %s" + str(e))
             print(traceback.format_exc())
+            return sys_error('9001')
 
-        try:
-            '''  服务端的IP地址和端口 '''
+        try:  # 绑定ip和端口
             client.connect((self.server_conf['IP'], self.server_conf['PORT']))
             '''
-            setblocking(flag):
-                如果flag为0，则将套接字设为非阻塞模式，否则将套接字设为阻塞模式（默认值）。
-                非阻塞模式下，如果调用recv()没有发现任何数据，或send()调用无法立即发送数据，那么将引起socket.error异常。
-            --- code ---
-            client.setblocking(False)
+            client.setblocking(flag):
+            如果flag为0，则将套接字设为非阻塞模式，否则将套接字设为阻塞模式（默认值）
+            非阻塞模式下，如果调用recv()没有发现任何数据，或send()调用无法立即发送数据，那么将引起socket.error异常
             '''
             print(f"[eqlink] connect link server success on {self.server_conf['IP']}:{self.server_conf['PORT']}")
         except socket.error as e:
             print('[eqlink] connected to link center error: %s' + str(e))
             print(traceback.format_exc())
-            return 'connect fail'
+            return sys_error('9002')
 
-        ''' 与注册中心保持连接，定时获取服务列表 '''
-        while True:
-            data_json = json.dumps(data_to_server)
-            # print('[consumer]', data_to_server)
-            if len(data_to_server['fail_server']) == 0:
-                fail_server_flag = False
-            else:
-                fail_server_flag = True
+        while True:  # 与注册中心保持连接，定时获取服务列表
+            fail_server_flag = False if len(data_to_server['invalid_service']) == 0 else True  # 判断是否存在调用失效的服务
             try:
-                client.sendall(bytes(data_json, encoding="utf8"))
-                data = client.recv(self.server_conf['BUF_SIZE'])
-                ''' 注册中心服务列表写入共享存储区 '''
-                remote_server.__set__(json.loads(data))
-                if fail_server_flag:
+                data_json = json.dumps(data_to_server)  # json转str
+                client.sendall(bytes(data_json, encoding="utf8"))  # 向注册中心发送信息，获取可用服务列表
+                data = client.recv(self.server_conf['BUF_SIZE'])  # 设置接收注册中心返回信息大小
+                remote_server.__set__(json.loads(data))  # 服务列表写入本地共享的内存中
+                if fail_server_flag:  # 移除本地存储的，用于与注册中心交互的的失效服务列表
                     data_to_server['fail_server'] = []
-                # print('[eqlink] [获取Provider服务列表]:', str(data, 'UTF-8'))  # 连接成功不进行控制台打印（日志太多）
             except socket.error as e:
                 print('[eqlink] consumer get provider list send failed: ', e)
                 print(traceback.format_exc())
                 break
-            ''' 间隔一段时间，进行一次心跳检擦，心跳数据设置 '''
-            time_sleep(self.client_conf['alive'])
-        return 'send fail'
+            time_sleep(self.client_conf['alive'])  # 间隔一段时间，进行一次心跳检擦，心跳数据设置
+        return sys_error('9003')

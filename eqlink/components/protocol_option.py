@@ -16,8 +16,8 @@ def protocol_analysis(protocol, storage_path):
     :param protocol: JSON协议数据
     :return: None
     """
-    if protocol['type'] == 'provider register':
-        link_list.add_provider(protocol)  # Provider注册
+    if protocol['type'] == 'provider register':  # Provider注册
+        link_list.add_provider(protocol)
         server_backup(storage_path)  # Provider服务列表本地持久化存储
         return {'code': '1000', 'message': '服务注册执行完成!'}
     elif protocol['type'] == 'get service':  # Consumer查询Provider服务列表
