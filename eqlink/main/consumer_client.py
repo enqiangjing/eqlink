@@ -28,7 +28,6 @@ class LinkClient:
         :param data_to_server: 发送到注册中心的数据
         :return: None
         """
-        client = None
         try:  # 创建socket套接字
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         except socket.error as e:
